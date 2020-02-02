@@ -1,36 +1,37 @@
-const db = require('quick.db')
 const Discord = require('discord.js')
+const db = require('quick.db')
 
-exports.run = async (client, message, args, config) => {
+exports.run = async (client, message, args) => {
 
+    let bankrobbed = Math.floor(Math.random() * 300) +1;
+
+if (args[0]) = (`bank`)
+    let BankEmbed = new Discord.RichEmbed()
+    .setDescription(`${message.author} you robbed a bank and earned ${bankrobbed}!`)
+    .setColor(client.config.colour)
+    message.channel.send(BankEmbed)
+
+    db.add(`money_${message.author.id}`, bankrobbed)
 
     let user = message.mentions.members.first()
-    let targetuser = await db.fetch(`money_${user.id}`) // fetch mentioned users balance
-    let author = await db.fetch(`money_${message.author.id}`) // fetch authors balance
-
+    let target = await db.fetch(`money_${user.id}`)
+    let moneyrobbed = Math.floor(Math.random() * 300) +1;
 
     if (!user) {
-        return message.channel.send('Sorry, you forgot to mention somebody.')
-    }
-    if (author < 250) { // if the authors balance is less than 250, return this.
-        return message.channel.send(':x: You need atleast 250$ to rob somebody.')
+        return message.channel.send(`You forgot to mention a user to rob!`)
     }
 
-    if (targetuser < 0) { // if mentioned user has 0 or less, it will return this.
-        return message.channel.send(`:x: ${user.user.username} does not have anything to rob.`)
+    if (target < 1) {
+        return message.channel.send(`${user.user.username} doesn't have any money!`)
     }
 
 
-    let random = Math.floor(Math.random() * 200) + 1; // random number 200-1, you can change 200 to whatever you'd like
+    let Embed = new Discord.RichEmbed()
+    .setDescription(`${message.author} you robbed ${user} and managed to get ${moneyrobbed} from them!`)
+    .setColor(client.config.colour)
+    message.channel.send(Embed)
 
 
-    let embed = new Discord.RichEmbed()
-    .setDescription(`${message.author} you robbed ${user} and got away with ${random}!`)
-    .setColor("GREEN")
-    .setTimestamp()
-    message.channel.send(embed)
-
-
-    db.subtract(`money_${user.id}`, random)
-    db.add(`money_${message.author.id}`, random)
+    db.subtract(`money_${user.id}`, moneyrobbed)
+    db.add(`money_${message.author.id}`, moneyrobbed)
 }
